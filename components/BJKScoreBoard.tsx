@@ -109,6 +109,7 @@ export default function TennisScoreboard({
 
   const logoContainerStyle: React.CSSProperties = {
     flexShrink: 0,
+    backgroundColor: '#1a3c5a',
   };
 
   const scoresWrapperStyle: React.CSSProperties = {
