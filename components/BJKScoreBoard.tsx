@@ -15,8 +15,6 @@ interface TennisScoreboardProps {
   arrowImageUrl?: string | StaticImageData;
   barnesLogoUrl: string | StaticImageData;
   ustaLogoUrl: string | StaticImageData;
-  tournamentName: string;
-  year: number;
 }
 
 export default function TennisScoreboard({
@@ -32,8 +30,6 @@ export default function TennisScoreboard({
   arrowImageUrl,
   barnesLogoUrl,
   ustaLogoUrl,
-  tournamentName,
-  year,
 }: TennisScoreboardProps) {
   const baseWidth = 896;
   const baseHeight = 512;
