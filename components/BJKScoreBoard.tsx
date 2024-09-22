@@ -73,13 +73,37 @@ export default function TennisScoreboard({
     display: "flex",
     flexDirection: "column",
     flex: 1,
+    alignItems: "flex-start",
+    justifyContent: "flex-start", // Changed from 'center' to 'flex-start'
+    paddingLeft: `${2 * scaleFactor}px`,
+    paddingTop: `${0 * scaleFactor}px`, // Added paddingTop for slight spacing
   };
 
-  const playerRowStyle: React.CSSProperties = {
-    display: "flex",
-    alignItems: "center",
-    padding: `${10 * scaleFactor}px`,
-    borderBottom: "1px solid #333",
+  const middleContainerStyle: React.CSSProperties = {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: `${10 * scaleFactor}px 0`,
+  };
+
+  const scoreTextStyle: React.CSSProperties = {
+    color: 'yellow',
+    fontSize: `${50 * scaleFactor}px`,
+    marginLeft: `${10 * scaleFactor}px`,
+    display: 'flex',
+    flexDirection: 'column',
+    lineHeight: 1.2,
+  };
+
+  const scoreRowStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: `${5 * scaleFactor}px`,
+  };
+
+  const playerNameStyle: React.CSSProperties = {
+    margin: 0,
+    fontSize: `${28 * scaleFactor}px`,
   };
 
   return (
@@ -100,19 +124,39 @@ export default function TennisScoreboard({
       </header>
       <main style={scoreboardStyle}>
         <div>
-          <h1>{player1}</h1>
+          <h1 style={playerNameStyle}>{player1}</h1>
         </div>
-        <div>
+        <div style={middleContainerStyle}>
           <Image
             src={UstaBJKLogo}
             alt="USTA BJK Logo"
             width={195 * scaleFactor}
             height={30 * scaleFactor}
           />
+          <div style={scoreTextStyle}>
+            {/* Player 1 Scores */}
+            <div style={scoreRowStyle}>
+              {score1.map((setScore, index) => (
+                <span key={index} style={{ marginRight: `${10 * scaleFactor}px` }}>
+                  {setScore}
+                </span>
+              ))}
+              <span>{currentGamePoints1}</span>
+            </div>
+            {/* Player 2 Scores */}
+            <div style={scoreRowStyle}>
+              {score2.map((setScore, index) => (
+                <span key={index} style={{ marginRight: `${10 * scaleFactor}px` }}>
+                  {setScore}
+                </span>
+              ))}
+              <span>{currentGamePoints2}</span>
+            </div>
           </div>
-          <div>
-            <h1>{player2}</h1>
-          </div>
+        </div>
+        <div>
+          <h1 style={playerNameStyle}>{player2}</h1>
+        </div>
       </main>
     </div>
   );
