@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef } from "react";
 import Image, { StaticImageData } from "next/image";
-import UstaBJKLogo from '@/images/tournament_logo.png';
+import UstaBJKLogo from "@/images/tournament_logo.png";
 
 interface TennisScoreboardProps {
-  initialWidth?: number;
-  initialHeight?: number;
+  width?: number;
+  height?: number;
   player1: string;
   player2: string;
-  score1: number[];
-  score2: number[];
-  currentGamePoints1: number;
-  currentGamePoints2: number;
+  score1?: number[];
+  score2?: number[];
+  currentGamePoints1?: number;
+  currentGamePoints2?: number;
   barnesLogoUrl: string | StaticImageData;
   ustaLogoUrl: string | StaticImageData;
   tournamentName: string;
@@ -18,146 +18,179 @@ interface TennisScoreboardProps {
 }
 
 export default function TennisScoreboard({
-  initialWidth = 800,
-  initialHeight = 400,
+  width = 892,
+  height = 512,
   player1,
   player2,
-  score1,
-  score2,
-  currentGamePoints1,
-  currentGamePoints2,
+  score1 = [0, 0, 0],
+  score2 = [0, 0, 0],
+  currentGamePoints1 = 0,
+  currentGamePoints2 = 0,
   barnesLogoUrl,
   ustaLogoUrl,
   tournamentName,
   year,
 }: TennisScoreboardProps) {
-  const [width, setWidth] = useState(initialWidth);
-  const [height, setHeight] = useState(initialHeight);
+  const baseWidth = 892;
+  const baseHeight = 512;
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleResize = () => {
-      const scale = Math.min(window.innerWidth / 800, window.innerHeight / 400);
-      setWidth(800 * scale);
-      setHeight(400 * scale);
-    };
+    if (containerRef.current) {
+      const scaleX = width / baseWidth;
+      const scaleY = height / baseHeight;
+      const scale = Math.min(scaleX, scaleY);
 
-    window.addEventListener('resize', handleResize);
-    handleResize();
+      containerRef.current.style.transform = `scale(${scale})`;
+      containerRef.current.style.transformOrigin = "top left";
+      containerRef.current.style.width = `${baseWidth}px`;
+      containerRef.current.style.height = `${baseHeight}px`;
 
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+      // Hide overflow in parent container
+      if (containerRef.current.parentElement) {
+        containerRef.current.parentElement.style.overflow = "hidden";
+      }
+    }
+  }, [width, height]);
 
-  const scaleFactor = width / 800;
+  // Ensure that score arrays have exactly three elements
+  const normalizedScore1 = [...score1, 0, 0, 0].slice(0, 3);
+  const normalizedScore2 = [...score2, 0, 0, 0].slice(0, 3);
 
-  const containerStyle: React.CSSProperties = {
+  const outerContainerStyle: React.CSSProperties = {
     width: `${width}px`,
     height: `${height}px`,
+    overflow: "hidden",
+    backgroundColor: "#000",
+  };
+
+  const containerStyle: React.CSSProperties = {
     backgroundColor: "#000000",
     color: "white",
+    fontFamily: "Arial, sans-serif",
     display: "flex",
     flexDirection: "column",
-    fontFamily: "Arial, sans-serif",
-    position: "relative",
-    overflow: "hidden",
+    width: "100%",
+    height: "100%",
   };
 
   const headerStyle: React.CSSProperties = {
+    flex: "0 0 62.5px",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: `${10 * scaleFactor}px`,
     backgroundColor: "#1a3c5a",
+    width: "100%",
+    padding: `12.5px`,
   };
 
   const scoreboardStyle: React.CSSProperties = {
+    flex: "1",
     display: "flex",
     flexDirection: "column",
-    flex: 1,
     alignItems: "flex-start",
-    justifyContent: "flex-start", // Changed from 'center' to 'flex-start'
-    paddingLeft: `${2 * scaleFactor}px`,
-    paddingTop: `${0 * scaleFactor}px`, // Added paddingTop for slight spacing
+    margin: 0, // Reset margin
+    padding: 0, // Reset padding
+    width: "100%",
   };
 
   const middleContainerStyle: React.CSSProperties = {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: `${10 * scaleFactor}px 0`,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    padding: `0px 0`,
+    width: "100%",
+    paddingRight: `20px`,
   };
 
   const scoreTextStyle: React.CSSProperties = {
-    color: 'yellow',
-    fontSize: `${50 * scaleFactor}px`,
-    marginLeft: `${10 * scaleFactor}px`,
-    display: 'flex',
-    flexDirection: 'column',
-    lineHeight: 1.2,
+    color: "yellow",
+    fontSize: `50px`,
+    marginLeft: `300px`,
+    display: "flex",
+    flexDirection: "column",
+    lineHeight: 1.5,
+    width: "100%",
+    padding: `0 50px`,
   };
 
   const scoreRowStyle: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: `${5 * scaleFactor}px`,
+    display: "flex",
+    alignItems: "center",
+    marginBottom: `0px`,
+    justifyContent: "space-between",
+    width: "100%",
+  };
+
+  const setScoresStyle: React.CSSProperties = {
+    display: "flex",
+  };
+
+  const setScoreStyle: React.CSSProperties = {
+    marginRight: `10px`,
+    minWidth: `50px`,
+    textAlign: "center",
   };
 
   const playerNameStyle: React.CSSProperties = {
     margin: 0,
-    fontSize: `${28 * scaleFactor}px`,
+    padding: 0,
+    fontSize: `80px`,
   };
 
   return (
-    <div style={containerStyle}>
-      <header style={headerStyle}>
-        <Image
-          src={barnesLogoUrl}
-          alt="Barnes Logo"
-          width={80 * scaleFactor}
-          height={30 * scaleFactor}
-        />
-        <Image
-          src={ustaLogoUrl}
-          alt="USTA Logo"
-          width={80 * scaleFactor}
-          height={30 * scaleFactor}
-        />
-      </header>
-      <main style={scoreboardStyle}>
-        <div>
-          <h1 style={playerNameStyle}>{player1}</h1>
-        </div>
-        <div style={middleContainerStyle}>
+    <div style={outerContainerStyle}>
+      <div ref={containerRef} style={containerStyle}>
+        <header style={headerStyle}>
           <Image
-            src={UstaBJKLogo}
-            alt="USTA BJK Logo"
-            width={195 * scaleFactor}
-            height={30 * scaleFactor}
+            src={barnesLogoUrl}
+            alt="Barnes Logo"
+            width={250}
+            height={50}
           />
-          <div style={scoreTextStyle}>
-            {/* Player 1 Scores */}
-            <div style={scoreRowStyle}>
-              {score1.map((setScore, index) => (
-                <span key={index} style={{ marginRight: `${10 * scaleFactor}px` }}>
-                  {setScore}
-                </span>
-              ))}
-              <span>{currentGamePoints1}</span>
-            </div>
-            {/* Player 2 Scores */}
-            <div style={scoreRowStyle}>
-              {score2.map((setScore, index) => (
-                <span key={index} style={{ marginRight: `${10 * scaleFactor}px` }}>
-                  {setScore}
-                </span>
-              ))}
-              <span>{currentGamePoints2}</span>
+          <Image src={ustaLogoUrl} alt="USTA Logo" width={250} height={50} />
+        </header>
+        <main style={scoreboardStyle}>
+          <div style={{ margin: 0, padding: "2px 0 0 0" }}>
+            <h1 style={playerNameStyle}>{player1}</h1>
+          </div>
+          <div style={middleContainerStyle}>
+            <Image
+              src={UstaBJKLogo}
+              alt="USTA BJK Logo"
+              width={1000}
+              height={195}
+            />
+            <div style={scoreTextStyle}>
+              {/* Player 1 Scores */}
+              <div style={scoreRowStyle}>
+                <div style={setScoresStyle}>
+                  {normalizedScore1.map((setScore, index) => (
+                    <span key={index} style={setScoreStyle}>
+                      {setScore}
+                    </span>
+                  ))}
+                </div>
+                <span>{currentGamePoints1}</span>
+              </div>
+              {/* Player 2 Scores */}
+              <div style={scoreRowStyle}>
+                <div style={setScoresStyle}>
+                  {normalizedScore2.map((setScore, index) => (
+                    <span key={index} style={setScoreStyle}>
+                      {setScore}
+                    </span>
+                  ))}
+                </div>
+                <span>{currentGamePoints2}</span>
+              </div>
             </div>
           </div>
-        </div>
-        <div>
-          <h1 style={playerNameStyle}>{player2}</h1>
-        </div>
-      </main>
+          <div>
+            <h1 style={playerNameStyle}>{player2}</h1>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
